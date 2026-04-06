@@ -1,0 +1,34 @@
+name: supportops-openenv
+version: 0.1.0
+description: Support operations environment for triaging customer tickets, routing work, and drafting compliant responses.
+tags:
+  - openenv
+  - support-operations
+  - customer-support
+  - agent-benchmark
+entrypoint: supportops_openenv.environment:SupportOpsEnv
+api:
+  - step
+  - reset
+  - state
+spaces:
+  action: supportops_openenv.models.SupportAction
+  observation: supportops_openenv.models.SupportObservation
+  state: supportops_openenv.models.SupportState
+  reward: supportops_openenv.models.Reward
+episode:
+  max_steps: 6
+  reward_range: [0.0, 1.0]
+tasks:
+  - id: refund_routing
+    name: Refund request triage
+    difficulty: easy
+    grader: supportops_openenv.grading:score_refund_routing
+  - id: outage_coordination
+    name: Outage escalation and customer update
+    difficulty: medium
+    grader: supportops_openenv.grading:score_outage_coordination
+  - id: access_review
+    name: Access request with identity verification
+    difficulty: hard
+    grader: supportops_openenv.grading:score_access_review
