@@ -21,6 +21,7 @@ BENCHMARK_NAME = os.getenv("BENCHMARK_NAME", "supportops-openenv")
 MAX_STEPS = 6
 TEMPERATURE = 0.0
 MAX_TOKENS = 250
+SCORE_EPSILON = 1e-6
 
 
 SYSTEM_PROMPT = (
@@ -39,6 +40,10 @@ def _fmt_reward(value: float) -> str:
     return f"{value:.2f}"
 
 
+def _strict_open_interval_score(value: float) -> float:
+    return max(SCORE_EPSILON, min(1.0 - SCORE_EPSILON, float(value)))
+
+
 def _log_start(task: str, env_name: str, model_name: str) -> None:
     print(f"[START] task={task} env={env_name} model={model_name}", flush=True)
 
@@ -53,8 +58,9 @@ def _log_step(step: int, action: str, reward: float, done: bool, error: str | No
 
 def _log_end(success: bool, steps: int, score: float, rewards: list[float]) -> None:
     reward_blob = ",".join(_fmt_reward(value) for value in rewards)
+    safe_score = _strict_open_interval_score(score)
     print(
-        f"[END] success={_fmt_bool(success)} steps={steps} score={score:.2f} rewards={reward_blob}",
+        f"[END] success={_fmt_bool(success)} steps={steps} score={safe_score:.6f} rewards={reward_blob}",
         flush=True,
     )
 
@@ -186,12 +192,14 @@ def _run_task(client: OpenAI, model_name: str, task_id: str, seed: int) -> tuple
 
             rewards.append(reward_value)
             steps = step
-            score = float(info.get("score", 0.0))
+            score = _strict_open_interval_score(float(info.get("score", 0.0)))
             recent_score = score
             _log_step(step=step, action=action_text, reward=reward_value, done=done, error=None)
 
         if steps and not score:
-            score = env.state().hidden_score
+            score = _strict_open_interval_score(env.state().hidden_score)
+        else:
+            score = _strict_open_interval_score(score)
         success = score >= 0.90
         return success, steps, score, rewards
     finally:
