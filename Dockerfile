@@ -1,14 +1,18 @@
-FROM python:3.12-alpine
+FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PORT=7860
 
+RUN useradd -m -u 1000 user
+USER user
+ENV PATH="/home/user/.local/bin:$PATH"
+
 WORKDIR /app
 
-COPY requirements.txt pyproject.toml README.md openenv.yaml /app/
-COPY supportops_openenv /app/supportops_openenv
-COPY app.py /app/app.py
+COPY --chown=user requirements.txt pyproject.toml README.md openenv.yaml /app/
+COPY --chown=user supportops_openenv /app/supportops_openenv
+COPY --chown=user app.py /app/app.py
 
 RUN pip install --no-cache-dir -r requirements.txt
 

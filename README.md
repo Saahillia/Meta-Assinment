@@ -1,3 +1,16 @@
+---
+title: SupportOps OpenEnv
+emoji: 🛠️
+colorFrom: blue
+colorTo: green
+sdk: docker
+app_port: 7860
+pinned: false
+tags:
+  - openenv
+  - agent-benchmark
+---
+
 # SupportOps OpenEnv
 
 SupportOps OpenEnv is a real-world support-operations environment for training agents on ticket triage, incident escalation, access reviews, and compliant customer communication.
