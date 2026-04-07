@@ -12,7 +12,7 @@ from .tasks import get_task_specs
 
 
 ScoreFn = Callable[[SupportState, SupportTaskSpec], float]
-_SCORE_EPSILON = 1e-6
+_SCORE_EPSILON = 1e-2
 
 
 @dataclass(frozen=True)

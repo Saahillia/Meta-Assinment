@@ -3,7 +3,7 @@ from __future__ import annotations
 from .models import SupportState, SupportTaskSpec
 
 
-_SCORE_EPSILON = 1e-6
+_SCORE_EPSILON = 1e-2
 
 
 def _normalized_contains(haystack: str, needle: str) -> bool:

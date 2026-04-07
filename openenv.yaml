@@ -18,7 +18,7 @@ spaces:
   reward: supportops_openenv.models.Reward
 episode:
   max_steps: 6
-  reward_range: [0.000001, 0.999999]
+  reward_range: [0.01, 0.99]
 tasks:
   - id: refund_routing
     name: Refund request triage
