@@ -1,4 +1,4 @@
-FROM python:3.11-slim-bookworm
+FROM mcr.microsoft.com/devcontainers/python:1-3.11-bookworm
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
