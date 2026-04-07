@@ -3,6 +3,9 @@ from __future__ import annotations
 from .models import SupportState, SupportTaskSpec
 
 
+_SCORE_EPSILON = 1e-6
+
+
 def _normalized_contains(haystack: str, needle: str) -> bool:
     return needle.lower() in haystack.lower()
 
@@ -43,7 +46,8 @@ def _score_task(state: SupportState, task: SupportTaskSpec) -> float:
         score += 0.05
     if task.task_id == "access_review" and any(_normalized_contains(state.response_draft, forbidden) for forbidden in task.response_must_avoid):
         score -= 0.20
-    return max(0.0, min(1.0, score))
+    # Phase 2 validation requires each task score to be strictly inside (0, 1).
+    return max(_SCORE_EPSILON, min(1.0 - _SCORE_EPSILON, score))
 
 
 def score_refund_routing(state: SupportState, task: SupportTaskSpec) -> float:
