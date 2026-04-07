@@ -12,6 +12,7 @@ from .tasks import get_task_specs
 
 
 ScoreFn = Callable[[SupportState, SupportTaskSpec], float]
+_SCORE_EPSILON = 1e-6
 
 
 @dataclass(frozen=True)
@@ -109,7 +110,9 @@ class SupportOpsEnv:
 
     def _compute_score(self) -> float:
         assert self._state is not None and self._current_task is not None
-        score = self._current_task.scorer(self._state, self._current_task.spec)
+        raw_score = self._current_task.scorer(self._state, self._current_task.spec)
+        # Keep task score strictly inside (0, 1) for validator compatibility.
+        score = max(_SCORE_EPSILON, min(1.0 - _SCORE_EPSILON, float(raw_score)))
         self._state.hidden_score = score
         return score
 
