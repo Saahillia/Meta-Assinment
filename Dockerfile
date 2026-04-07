@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM python:3.11.9-slim-bookworm
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -14,7 +14,8 @@ COPY --chown=user requirements.txt pyproject.toml README.md openenv.yaml /app/
 COPY --chown=user supportops_openenv /app/supportops_openenv
 COPY --chown=user app.py /app/app.py
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN python -m pip install --upgrade pip \
+	&& pip install --no-cache-dir --retries 5 --timeout 120 -r requirements.txt
 
 EXPOSE 7860
 
